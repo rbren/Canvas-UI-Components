@@ -1,0 +1,43 @@
+{
+  "name": "@openhands/canvas-react",
+  "version": "0.1.0",
+  "description": "Isolated React providers and hooks for OpenHands Agent Server",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenHands/Canvas-UI-Components.git",
+    "directory": "packages/react"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@openhands/canvas-core": "0.1.0",
+    "@openhands/typescript-client": "1.50.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  }
+}

@@ -1,179 +1,220 @@
-<a name="readme-top"></a>
+# Canvas UI Components
 
-<div align="center">
-  <img src="https://assets.openhands.dev/logo-whitebackground.png" alt="OpenHands logo" width="340">
-  <h1 align="center" style="border-bottom: none">Agent Canvas</h1>
-  <p align="center">
-    <strong>The self-hosted developer control center for coding agents and automations.</strong>
-  </p>
-  <p align="center">
-    Run OpenHands, Claude Code, Codex, Gemini, or any ACP-compatible agent across local, remote, and cloud backends.
-  </p>
-</div>
-<div align="center">
-  <a href="https://github.com/OpenHands/incubator-program"><img src="https://img.shields.io/badge/status-beta-blue?style=for-the-badge" alt="Project status beta"></a>
-  <a href="https://github.com/OpenHands/OpenHands/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/OpenHands/OpenHands/ci.yml?branch=main&style=for-the-badge" alt="CI status"></a>
-  <a href="https://www.npmjs.com/package/@openhands/agent-canvas"><img src="https://img.shields.io/npm/v/%40openhands%2Fagent-canvas?style=for-the-badge&logo=npm" alt="npm version"></a>
-  <a href="https://docs.openhands.dev/openhands/usage/agent-canvas/backends"><img src="https://img.shields.io/badge/Documentation-000?logo=googledocs&logoColor=FFE165&style=for-the-badge" alt="Documentation"></a>
-  <a href="https://go.openhands.dev/slack"><img src="https://img.shields.io/badge/Slack-Join%20the%20community-611f69?logo=slack&logoColor=white&style=for-the-badge" alt="Join us on Slack"></a>
-</div>
-<div align="center">
-  <a href="#quickstart">Quickstart</a> |
-  <a href="./docs/README.md">Docs</a> |
-  <a href="./docs/SELF_HOSTING.md">Self-Hosting</a> |
-  <a href="https://docs.openhands.dev/openhands/usage/agent-canvas/acp-agents">ACP Agents</a> |
-  <a href="https://docs.openhands.dev/openhands/usage/agent-canvas/prebuilt-automations">Automations</a> |
-  <a href="https://go.openhands.dev/slack">Slack</a>
-</div>
-<p align="center">
-  <img src="https://assets.openhands.dev/screenshot/automation-preview.png" alt="Agent Canvas automation preview" width="100%">
-</p>
-<hr>
+Reusable React building blocks for applications that talk to an [OpenHands Agent Server](https://github.com/OpenHands/software-agent-sdk).
 
-OpenHands Agent Canvas turns your coding agents into a self-hosted, always-on engineering team. It's a developer control center for starting conversations and automating everyday tasks — like generating reports that publish to Slack or automatically decomposing GitHub issues into tasks.
+This repository is a library-focused rewrite of [OpenHands/OpenHands](https://github.com/OpenHands/OpenHands), retaining its Git history and MIT license. The old application, router, desktop launcher, deployment stack, telemetry, and global stores are deliberately **not** part of these packages.
 
-It runs locally on your machine by default, but can connect to multiple “agent backends”, e.g. running agents in Docker containers, on VMs, or within your company infrastructure. You can optionally choose to run agents on OpenHands Cloud or OpenHands Enterprise infrastructure.
+**Development preview: 0.1.0.** Packages are buildable and packable from this repository; they have **not been published to npm**. This is not feature parity with the entire Agent Canvas product.
 
-Agent Canvas runs the open source OpenHands agent out-of-the-box, but can use any third-party agent like Claude Code and Codex.
+## Packages
 
-|                                                                                                                      |                                                                                                                                          |
-| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [**Self-host your way**](https://docs.openhands.dev/openhands/usage/agent-canvas/backend-setup/vm)                   | Run agents locally, in Docker, on VMs, or anywhere you can run an agent server backend                                                   |
-| [**Switch between different backends**](https://docs.openhands.dev/openhands/usage/agent-canvas/backends)            | Switch between local, remote, and cloud agents without losing focus                                                                      |
-| [**Create automations**](https://docs.openhands.dev/openhands/usage/agent-canvas/prebuilt-automations)               | Create automations and workflows that integrate with Slack, GitHub, Linear, and more. Run on a schedule or in response to webhook events |
-| [**Integrate with the tools you use**](https://docs.openhands.dev/openhands/usage/agent-canvas/prebuilt-automations) | Connect your automations with third-party services like Slack, GitHub, Notion, and more to automate workflows                            |
-| [**Bring your own model**](https://docs.openhands.dev/openhands/usage/settings/llm-settings#llm-profiles)            | Use with any LLM                                                                                                                         |
-| [**Use with any agent**](https://docs.openhands.dev/openhands/usage/agent-canvas/acp-agents)                         | Use with OpenHands, Claude Code, Codex, Gemini, or any agent with Agent-Client Protocol (ACP).                                           |
+| Package | Responsibility | React required? |
+| --- | --- | --- |
+| `@openhands/canvas-core` | Explicitly configured SDK services, conversation sessions, history/live reconciliation, event-to-UI projection | No |
+| `@openhands/canvas-react` | Per-server providers, conversation subscriptions, shared settings and catalog hooks | React 18.3 / 19 |
+| `@openhands/canvas-ui` | Independent presentation components and a complete connected chat | React 18.3 / 19 |
 
-If you have questions or feedback, please open a GitHub issue or join the [#proj-agent-canvas channel in Slack](https://openhands.dev/joinslack).
+The dependency direction is `official TypeScript client → core → React → UI`. No package requires React Router, Tailwind, Zustand, React Query, a particular authentication system, browser storage, or an application-wide singleton.
 
-## Quickstart
+## Build and try it
 
-You can install OpenHands to run agents on any machine: on your laptop, on a dedicated computer like a Mac Mini,
-or on a server in the cloud.
-
-The most powerful way to run OpenHands is on a server in the cloud. This allows your agents to continue running
-even when your laptop is shut, and makes it easier to trigger your agents through third-party services
-like Slack, GitHub, and Datadog. See [SELF_HOSTING.md](docs/SELF_HOSTING.md) for details, especially with respect to security hardening.
-
-Notably, you can run the backend in _multiple different environments_, and switch between
-them from the same Agent Canvas frontend. E.g. you can share an Agent Server with your team for agents doing
-code review and dependency updates, then have your personal agents running on your laptop.
-
-### Option 1: Without a Sandbox
-
-> [!WARNING]
-> This runs the agent-server directly on the machine you're installing on — the agent will have full access to your filesystem!
-
-**Prerequisites**: [Node.js](https://nodejs.org/) 24 or later, `uv`
+Use Node **22.12+ or 24+** and npm.
 
 ```sh
-npm install -g @openhands/agent-canvas
-agent-canvas
-```
-
-The `agent-canvas` command starts the full local stack by default. You can also split it when you want to run pieces separately:
-
-```sh
-agent-canvas --frontend-only  # static frontend + ingress only
-agent-canvas --backend-only   # agent server + automation backend + ingress only
-```
-
-### Option 2: With a Docker Sandbox
-
-**Prerequisites**:
-
-- Docker: Docker Desktop on macOS/Windows, or Docker Engine/Docker Desktop on Linux.
-- A host directory for `PROJECTS_PATH` containing the project folders you want the agent to access. Create it before starting the container.
-
-**macOS / Linux:**
-
-```sh
-export PROJECTS_PATH="$HOME/projects"  # directory containing your project folders
-mkdir -p "$PROJECTS_PATH" "$HOME/.openhands"
-
-docker run -it --rm \
-  -p 127.0.0.1:8000:8000 \
-  -e AGENT_CANVAS_ALLOW_LAN_SESSION_KEY=true \
-  -v "$HOME/.openhands:/home/openhands/.openhands" \
-  -v "${PROJECTS_PATH}:/projects" \
-  ghcr.io/openhands/agent-canvas:1.24.0 # x-release-please-version
-```
-
-**Windows (PowerShell / Windows Terminal):** See [README.windows.md](./README.windows.md) for the equivalent commands.
-
-The agent will be able to access any project under `PROJECTS_PATH`.
-
-### Option 3: With Multiple Docker Sandboxes
-
-Run each new conversation in its own Docker container, with its own Agent Server and tools. This is useful for running several agents concurrently. Canvas and the outer Agent Server run on your host and route conversation requests to the containers.
-
-**Prerequisites**: Node.js 24 or later, `uv`, and a running Docker Desktop (macOS) or Docker Engine/Desktop (Linux). The user starting Canvas must be able to run `docker` commands.
-
-**macOS / Linux:**
-
-```sh
-npm install -g @openhands/agent-canvas
-OH_CONVERSATION_RUNTIME=docker agent-canvas
-```
-
-Open [http://localhost:8000](http://localhost:8000) and start a new conversation. Existing local conversations are not converted. Each container mounts its conversation's workspace and persisted state, so workspace files and conversation history survive container replacement. Conversations using the same host workspace still share those files; choose separate directories or worktrees to avoid conflicting edits.
-
-This setting isolates conversation execution; it does not move the entire Canvas or automation service into a sandbox. For Windows, see [README.windows.md](./README.windows.md#option-3-with-multiple-docker-sandboxes-wsl-2).
-
-### Option 4: From Source
-
-> [!WARNING]
-> This runs the agent-server directly on the machine you're installing on — the agent will have full access to your filesystem!
-
-**Prerequisites**: [Node.js](https://nodejs.org/) 24 or later, `npm`, `uv` (for running the agent server via `uvx`)
-
-```sh
-git clone https://github.com/OpenHands/OpenHands.git
-cd OpenHands
-npm install
+npm ci --ignore-scripts
+npm run check
 npm run dev
 ```
 
----
+The Vite example opens a component gallery and a **Connect Agent Server** view. It imports only public package exports. The gallery is explicitly a local fixture; it does not pretend to run an agent. Live mode connects to your server, lists existing conversations, and exposes the chat and settings components. Session credentials remain in memory.
 
-Access the UI at [http://localhost:8000](http://localhost:8000) for the npm/source launchers, or [http://localhost:8000/canvas](http://localhost:8000/canvas) for the Docker image. You can add additional backends directly from the UI.
+To install into another application before an npm release:
 
-Local (`npx` / `npm run dev`) listeners bind **loopback only** (`127.0.0.1`) so the auto-injected session key is not reachable from other machines on the network. To listen on all interfaces, pass `--host 0.0.0.0` (or set `OH_BIND_HOST`); the session key is then **not** injected and the UI uses the same API-key entry screen as `--public`.
+```sh
+npm run build
+mkdir -p /tmp/canvas-packages
+npm pack -w @openhands/canvas-core --pack-destination /tmp/canvas-packages
+npm pack -w @openhands/canvas-react --pack-destination /tmp/canvas-packages
+npm pack -w @openhands/canvas-ui --pack-destination /tmp/canvas-packages
 
-Docker listens on all container interfaces so port publishing works, but does not inject its session key into HTML by default. The quickstart above explicitly enables injection while publishing the host port on `127.0.0.1` only. If you publish Docker on a LAN or public interface, omit `AGENT_CANVAS_ALLOW_LAN_SESSION_KEY` and enter the API key in the UI. Set `LOCAL_BACKEND_API_KEY` to a strong value, or retrieve the generated value with `docker exec <container> sh -c 'cat "$STATE_DIR/api-key.txt"'`. For internet-facing installs, follow [self-hosting](./docs/SELF_HOSTING.md).
+# In the consuming React application, install all three tarballs together:
+npm install /tmp/canvas-packages/openhands-canvas-{core,react,ui}-0.1.0.tgz
+```
 
-# Architecture
+These are ESM packages with TypeScript declarations. React and React DOM are peer dependencies, not bundled copies. Core has separate browser and Node entry points; browser consumers need no Node HTTP polyfills. React entry points preserve `"use client"` for frameworks with React Server Components.
 
-Agent Canvas is powered by the [OpenHands Agent Server](https://github.com/OpenHands/software-agent-sdk/tree/main/openhands-agent-server/openhands/agent_server), a REST API for running multiple agents on a single machine. Each Agent Server runs on a single host/port; the Agent Canvas can connect to multiple Agent Servers and easily flip between them.
+## Drop-in chat
 
-You can run an Agent Server anywhere:
+```tsx
+import { createAgentServices } from "@openhands/canvas-core";
+import { AgentChat } from "@openhands/canvas-ui";
+import "@openhands/canvas-ui/styles.css"; // Optional; no global CSS reset
 
-- Directly on your laptop (be careful!)
-- On a dedicated machine like a Mac Mini
-- On a virtual machine in the cloud
-- Inside OpenHands Cloud (our commercial offering)
+// Create once per server/credential identity, not on every render.
+const services = createAgentServices({
+  host: "https://agents.example.com/backend", // Proxy prefixes are supported
+  apiKey: sessionKey,
+});
 
-The Agent Server is often paired with an [Automation Server](https://github.com/OpenHands/automation), which lets you set up agents that run on a schedule or in response to events.
+export function Chat({ conversationId }: { conversationId: string }) {
+  return (
+    <div style={{ height: 650 }}>
+      <AgentChat services={services} conversationId={conversationId} />
+    </div>
+  );
+}
 
-<img width="1456" height="1258" alt="image" src="https://github.com/user-attachments/assets/cb6de6f5-ac30-4d04-a76a-b5c259f0c163" />
+// The application owns services; close them when that server connection ends.
+// services.close();
+```
 
-### Repository boundaries
+`AgentChat` includes connection and execution status, history pagination, streamed messages, tool cards, a composer, retry/reconnect controls, pause/resume, and approval/rejection controls. Failed submissions retain the draft. Changing conversation or server identity resets private UI drafts and errors.
 
-Agent Canvas is part of a multi-repository OpenHands system. Changes should go to the repository that owns the behavior:
+A conversation ID identifies an existing server conversation. To create one, pass your server's canonical creation payload to `services.conversations.createConversation(payload)` and use its returned `id`. The library deliberately does not choose a model, workspace, tools, or confirmation policy for your application.
 
-| Repository                                                                        | Responsibility                                                                                            |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| [`OpenHands/OpenHands`](https://github.com/OpenHands/OpenHands)                   | Agent Canvas frontend, user-facing control center, backend selection, and local-stack orchestration.      |
-| [`OpenHands/software-agent-sdk`](https://github.com/OpenHands/software-agent-sdk) | Python SDK, Agent Server, agents, tools, conversations, workspaces, events, and the canonical server API. |
-| [`OpenHands/typescript-client`](https://github.com/OpenHands/typescript-client)   | Browser-compatible TypeScript client for the Agent Server API.                                            |
-| [`OpenHands/automation`](https://github.com/OpenHands/automation)                 | Automation definitions, scheduling, webhooks, run history, and dispatching.                               |
+## Compose your own experience
 
-The Agent Server API is implemented by the SDK and consumed through the TypeScript client by Agent Canvas. The automation service decides when work runs and dispatches conversations to the Agent Server/SDK, which decides what runs. See [`AGENTS.md`](./AGENTS.md) for contributor-specific boundaries and the required custom code-review guide.
+```tsx
+import { AgentProvider, ConversationProvider, useConversation } from "@openhands/canvas-react";
+import { MessageList, ChatComposer, SettingsPanel } from "@openhands/canvas-ui";
 
-## More documentation
+function MyChat() {
+  const chat = useConversation();
+  return (
+    <>
+      {chat.error && <p role="alert">{chat.error.message}</p>}
+      <MessageList
+        items={chat.items}
+        hasOlder={chat.hasOlder}
+        loadingOlder={chat.loadingOlder}
+        onLoadOlder={chat.loadOlder}
+        toolRenderers={{
+          terminal: (tool) => (
+            <details>
+              <summary>{tool.summary || tool.name} · {tool.status}</summary>
+              <pre>{JSON.stringify(tool.output ?? tool.input, null, 2)}</pre>
+            </details>
+          ),
+        }}
+      />
+      <ChatComposer
+        onSend={chat.sendMessage}
+        pending={chat.sending}
+        disabled={chat.connection !== "connected" || chat.loading}
+      />
+    </>
+  );
+}
 
-- [Documentation index](./docs/README.md)
-- [Architecture overview](./docs/architecture.md)
-- [Development guide](./docs/DEVELOPMENT.md)
-- [Self-hosting guide](./docs/SELF_HOSTING.md)
+// In your application:
+// <AgentProvider services={services}>
+//   <ConversationProvider conversationId={id}><MyChat /></ConversationProvider>
+//   <SettingsPanel />
+// </AgentProvider>
+```
+
+### React APIs
+
+- `AgentProvider`: accepts application-owned `services`. Owns settings/catalog state for its subtree; it does not close externally owned services.
+- `ConversationProvider`: accepts a `conversationId`. Connects on mount and releases its subscription on unmount. Multiple providers sharing the same services and ID share one reference-counted socket.
+- `useConversation()`: returns the snapshot plus `sendMessage`, `pause`, `resume`, `confirm`, `refresh`, `loadOlder`, and `reconnect`.
+- `useSettings()`: shared redacted settings, loading/saving/error state, `refresh`, and `save(patch)`.
+- `useConversations()`: paginated catalog, `refresh`, `loadMore`, `create(payload)`, and `remove(id)`. Selection remains application-owned; clear your selected ID after deleting it.
+- `useAgentServices()` / `useConversationSession()`: direct access to the scoped service/session.
+
+All hooks require the corresponding provider and explain missing-provider errors. Multiple servers can coexist without sharing state. Imports and SSR renders open no sockets or network requests. For SSR, create services per request; never share credentials through a server-global instance.
+
+### Standalone components
+
+| Component | Main inputs |
+| --- | --- |
+| `Markdown` | `text`, optional code renderer and image opt-in |
+| `MessageBubble` | `message`, optional header/content/footer renderers |
+| `ToolCallCard` | `tool`, collapsible input/output, status/risk, custom renderers |
+| `MessageList` | `items`, pagination, renderer registry, scroll-preserving transcript |
+| `ChatComposer` | Async `onSend`, pending/disabled/error handling, IME-safe keyboard input |
+| `ConnectionStatus` | Connection state and reconnect callback |
+| `ConversationList` | Catalog, controlled `activeId`, selection/create/pagination callbacks |
+| `SettingsForm` | Controlled `settings`, `value`, `onChange`, async `onSave` |
+| `SettingsPanel` | Connected settings form using `useSettings` |
+| `ChatPanel` | Connected chat within your existing providers |
+| `AgentChat` | Self-contained provider composition for `services` + `conversationId` |
+
+`SettingsForm` currently edits the OpenHands LLM model, API key, and base URL. It sends only changed fields and never copies a masked secret back into a write. ACP-specific configuration is not exposed as an LLM form. Other settings, profiles, skills, MCP, and workspace configuration can be composed using the official SDK's typed clients rather than a second set of API contracts.
+
+Exported prop interfaces are the source of truth. Presentation components can be used without a server or provider. `ChatItem` is a presentation model; canonical wire event types remain owned by the SDK.
+
+### Labels, styles, and security
+
+Each component accepts optional `labels`, `className`, and `style`. Set defaults across a subtree with `UILabelsProvider`, or override labels on an individual component. No translation global is installed.
+
+The optional stylesheet uses only `oh-` classes and `--oh-*` variables. Example theme overrides:
+
+```css
+.my-agent-chat {
+  --oh-accent: #635bff;
+  --oh-accent-hover: #4b44c7;
+  --oh-user-surface: #f0efff;
+  --oh-radius: 8px;
+  --oh-font: system-ui, sans-serif;
+}
+```
+
+Markdown does not execute raw HTML. Links are protocol-filtered. Images are user-activated links by default, avoiding automatic remote tracking requests; `allowImages` explicitly opts into loading them. Custom renderers are application code and must preserve the same trust boundary.
+
+Configure Agent Server CORS to allow your application's origin and the `X-Session-API-Key` header. Use HTTPS outside loopback. Credentials are sent in SDK REST headers and the WebSocket authentication frame, never query parameters. The library does not persist keys or inject server credentials into static assets. Authentication, authorization, and safe agent execution policies remain the host application's responsibility.
+
+## Framework-neutral services
+
+```ts
+import { createAgentServices } from "@openhands/canvas-core";
+
+const services = createAgentServices({ host, apiKey, pageSize: 100 });
+const session = services.createSession(conversationId);
+const unsubscribe = session.subscribe(() => {
+  const { items, connection, status, error } = session.getSnapshot();
+  // Render, observe, or adapt this state to another framework.
+});
+const disconnect = session.connect();
+
+await session.sendMessage("Inspect the project");
+// await session.pause();
+// await session.confirm(true);
+
+unsubscribe();
+disconnect();
+session.dispose(); // Also removes the cached session; a later createSession starts fresh.
+services.close();
+```
+
+`services.conversations`, `.settings`, `.files`, `.profiles`, and `.server` are the official SDK client instances, not endpoint reimplementations. The files service is host-scoped. For conversation-sandbox file APIs, construct an SDK `FileClient` with the owning `conversationId`.
+
+Sessions merge REST history and live events by identity, retain pagination, refill reconnect gaps, and reject stale responses from a released connection. The final `disconnect` closes the socket and retry timers. Sessions cache history until `dispose()` or `services.close()`; dispose unused sessions in long-lived applications. SDK requests without cancellation support finish or reach the configured timeout, but their late results do not update a disconnected session.
+
+## Verification and compatibility
+
+```sh
+npm run typecheck
+npm test
+npm run build:example
+npm run test:packages
+REACT_VERSION=18.3.1 npm run test:packages
+npm run format:check
+npm audit
+```
+
+Tests cover real local HTTP/WebSocket transport paths, reconnect/pagination, shared ownership, stale reads, provider isolation, settings diffs, rendering safety, keyboard behavior, scrolling, and connected chat controls. Callback spies are used at presentation boundaries; the SDK and hooks are exercised rather than replaced with mocks.
+
+`test:packages` installs packed tarballs into a separate temporary consumer, checks public TypeScript imports, renders SSR, and bundles for the browser. It catches source aliases, missing CSS/declarations, lost client directives, bundled app dependencies, and Node import leaks that source-only tests miss.
+
+Live verification used Agent Server **1.49.6**, including history, authenticated WebSocket connection, and sending/receiving a real model response through the example's React chat. Current transport follows the released SDK's `/sockets/events` API. The newer session-envelope protocol is not implemented until supported by the published SDK. Compatibility with other server versions is not exhaustively established.
+
+### Scope of this rewrite
+
+Included: messages/Markdown, tool/observation rendering, legacy token text streaming, agent controls, isolated React state, basic LLM settings, typed service access, theming/custom renderers, and a consumer playground.
+
+Not included: Canvas routing, Electron, terminal emulator, browser remote control, Monaco/file explorer, cloud account login/discovery, automation administration, extension loading, or the old application's full settings catalog. These can be built as separate adapters/components without importing the original application shell. This repository does not start an Agent Server or publish packages automatically.
+
+Upstream baseline: [`a6bba78ffd5a8b31620770f52383b1a2c0477fcd`](https://github.com/OpenHands/OpenHands/commit/a6bba78ffd5a8b31620770f52383b1a2c0477fcd). Earlier application code remains recoverable from Git history.
+
+Initial library rewrite generated by the OpenHands AI agent on behalf of the repository requester.

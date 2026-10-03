@@ -1,0 +1,40 @@
+{
+  "name": "@openhands/canvas-core",
+  "version": "0.1.0",
+  "description": "Framework-neutral Agent Server services and conversation state",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/browser.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenHands/Canvas-UI-Components.git",
+    "directory": "packages/core"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --sourcemap --clean && node ../../scripts/build-browser.mjs"
+  },
+  "dependencies": {
+    "@openhands/typescript-client": "1.50.1"
+  },
+  "browser": "./dist/browser.js"
+}

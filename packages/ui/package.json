@@ -1,0 +1,49 @@
+{
+  "name": "@openhands/canvas-ui",
+  "version": "0.1.0",
+  "description": "Composable and drop-in React interfaces for OpenHands Agent Server",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenHands/Canvas-UI-Components.git",
+    "directory": "packages/ui"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup && node ../../scripts/copy-styles.mjs"
+  },
+  "dependencies": {
+    "@openhands/canvas-core": "0.1.0",
+    "@openhands/typescript-client": "1.50.1",
+    "@openhands/canvas-react": "0.1.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  }
+}
